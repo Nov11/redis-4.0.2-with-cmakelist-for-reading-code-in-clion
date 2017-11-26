@@ -106,41 +106,12 @@ add_executable(redis-server
         src/rax.c
         )
 
-
-#set_property(TARGET redis PROPERTY C_STANDARD 99)
-#set_property(TARGET redis PROPERTY CXX_STANDARD 11)
-#set_property(TARGET redis PROPERTY CXX_STANDARD_REQUIRED ON)
-
 #take care of compile flags
 ##STD=-std=c99 -pedantic -DREDIS_STATIC=
 #WARN=-Wall -W -Wno-missing-field-initializers
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -pedantic -DREDIS_STATIC= -Wall -W -Wno-missing-field-initializers")
 #take care of LDFLAGS= -g -ggdb -rdynamic
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -g -ggdb -rdynamic")
-#if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-#    #    FINAL_CFLAGS+= -DUSE_JEMALLOC -I../deps/jemalloc/include
-#    #DEPENDENCY_TARGETS+= jemalloc
-#    #FINAL_CFLAGS+= -DUSE_JEMALLOC -I../deps/jemalloc/include
-#    #FINAL_LIBS+= ../deps/jemalloc/lib/libjemalloc.a -ldl
-#endif()
-
-# XXX: Is this required for OSX?
-#set(THREADS_PREFER_PTHREAD_FLAG ON)
-#find_package(Threads REQUIRED)
-
-#target_include_directories(redis
-#        PRIVATE ${REDIS_ROOT}/deps/hiredis
-#        PRIVATE ${REDIS_ROOT}/deps/linenoise
-#        PRIVATE ${REDIS_ROOT}/deps/lua/src
-#        PRIVATE ${REDIS_ROOT}/deps/geohash-int
-#        )
-
-#Isn't this a duplication?
-## now create an imported static target
-#add_library(luaa STATIC IMPORTED)
-## Import target "scintilla" for configuration ""
-#set_property(TARGET luaa APPEND PROPERTY IMPORTED_CONFIGURATIONS NOCONFIG)
-#set_target_properties(luaa PROPERTIES IMPORTED_LOCATION_NOCONFIG "${REDIS_ROOT}/deps/lua/src/liblua.a")
 
 # redis-server
 #$(REDIS_SERVER_NAME): $(REDIS_SERVER_OBJ)
@@ -153,37 +124,8 @@ target_link_libraries(redis-server PRIVATE Threads::Threads)
 target_link_libraries(redis-server PRIVATE dl)
 
 target_link_libraries(redis-server
-        #PRIVATE Threads::Threads
         PRIVATE m
         PRIVATE ${REDIS_ROOT}/deps/lua/src/liblua.a
         PRIVATE ${REDIS_ROOT}/deps/linenoise/linenoise.o
         PRIVATE ${REDIS_ROOT}/deps/hiredis/libhiredis.a
         )
-
-# PRIVATE adds the property just to this target.
-# INTERFACE adds the property to targets that link to this target.
-# PUBLIC acts as both PRIVATE and INTERFACE because it adds the property to both this target and to targets that link to this target.
-#target_compile_definitions(redis
-#        PRIVATE REDIS_STATIC=
-#        )
-#
-#target_compile_options(redis
-#        PRIVATE -Wall -W -pedantic
-#        )
-
-#add_custom_target(
-#   extern_lib
-#   COMMAND make
-#   WORKING_DIRECTORY "${REDIS_ROOT}/deps/lua
-#)
-#add_executable(myexecutable myexcutable.c)
-#target_link_libraries(myexecutable full_path_to_generated_library)
-#add_dependencies(myexecutable extern_lib)
-
-message(${PROJECT_SOURCE_DIR})
-message(${PROJECT_BINARY_DIR})
-
-
-#add_custom_target(redis2 COMMAND make -C ${PROJECT_SOURCE_DIR}
-#        CLION_EXE_DIR=${PROJECT_BINARY_DIR} && cp ${PROJECT_SOURCE_DIR}/src/redis-server ./
-#        )
