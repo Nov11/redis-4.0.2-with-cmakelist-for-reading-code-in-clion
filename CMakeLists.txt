@@ -1,175 +1,175 @@
-# vim: set ai expandtab:
-
+#this file originates from https://raw.githubusercontent.com/liuzhengyang/redis-annotated/annotate/CMakeLists.txt
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
-# The following must be set BEFORE doing project() or eanble_language().
-# ::-------------------------------------------------------------------------::
-message("j")
-if (NOT CMAKE_BUILD_TYPE)
-    message(STATUS "No build type defined; defaulting to 'Debug'")
-    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING
-            "The type of build. Possible values are: Debug, Release, RelWithDebInfo and MinSizeRel.")
-endif()
-# ::-------------------------------------------------------------------------::
-
-project(redis VERSION 3.2)
+project(redis VERSION 4.0.2)
 
 message(STATUS "Host is: ${CMAKE_HOST_SYSTEM}.  Build target is: ${CMAKE_SYSTEM}")
 get_filename_component(REDIS_ROOT "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE)
 message(STATUS "Project root directory is: ${REDIS_ROOT}")
 
-# Just for debugging when handling a new platform.
-if (false)
-    message("C++ compiler supports these language features:")
-    foreach(i ${CMAKE_CXX_COMPILE_FEATURES})
-        message("  ${i}")
-    endforeach()
-endif()
+#for now, this is 'redis-server' target in the makefile.
+#make a cmakelists.txt for that target.
 
-add_executable(redis
+#as default build process shows, this depends on some resources.
+#quote these from .make-settings in src directory:
+#STD=-std=c99 -pedantic -DREDIS_STATIC=
+#WARN=-Wall -W -Wno-missing-field-initializers
+#OPT=-O2
+#MALLOC=jemalloc
+#CFLAGS=
+#LDFLAGS=
+#REDIS_CFLAGS=
+#REDIS_LDFLAGS=
+#PREV_FINAL_CFLAGS=-std=c99 -pedantic -DREDIS_STATIC= -Wall -W -Wno-missing-field-initializers -O2 -g -ggdb -I../deps/hiredis -I../deps/linenoise -I../deps/lua/src -DUSE_JEMALLOC -I../deps/jemalloc/include
+#PREV_FINAL_LDFLAGS= -g -ggdb -rdynamic
+
+#redis server obj:
+#adlist.o quicklist.o ae.o anet.o dict.o server.o sds.o zmalloc.o lzf_c.o lzf_d.o
+#pqsort.o zipmap.o sha1.o ziplist.o release.o networking.o util.o object.o db.o
+#replication.o rdb.o t_string.o t_list.o t_set.o t_zset.o t_hash.o config.o aof.o
+#pubsub.o multi.o debug.o sort.o intset.o syncio.o cluster.o crc16.o endianconv.o
+#slowlog.o scripting.o bio.o rio.o rand.o memtest.o crc64.o bitops.o sentinel.o
+#notify.o setproctitle.o blocked.o hyperloglog.o latency.o sparkline.o
+#redis-check-rdb.o redis-check-aof.o geo.o lazyfree.o module.o evict.o expire.o
+#geohash.o geohash_helper.o childinfo.o defrag.o siphash.o rax.o
+#these objs have corresponding dependencies that could be looked up in Makefile.dep
+#thus I got these include directories and source files.
+
+
+include_directories(deps/jemalloc/include/jemalloc deps/lua/src deps/hiredis)
+include_directories(src)
+add_executable(redis-server
         src/adlist.c
-        src/adlist.h
+        src/quicklist.c
         src/ae.c
-        src/ae.h
         src/anet.c
-        src/anet.h
-        src/aof.c
-        src/asciilogo.h
-        src/bio.c
-        src/bio.h
-        src/bitops.c
-        src/blocked.c
-        src/cluster.c
-        src/cluster.h
-        src/config.c
-        src/config.h
-        src/crc16.c
-        src/crc64.c
-        src/crc64.h
-        src/db.c
-        src/debug.c
         src/dict.c
-        src/dict.h
-        src/endianconv.c
-        src/endianconv.h
-        src/fmacros.h
-        src/geo.c
-        src/geo.h
-        src/help.h
-        src/hyperloglog.c
-        src/intset.c
-        src/intset.h
-        src/latency.c
-        src/latency.h
-        src/lzf.h
-        src/lzfP.h
+        src/server.c
+        src/sds.c
+        src/zmalloc.c
         src/lzf_c.c
         src/lzf_d.c
-        src/memtest.c
-        src/multi.c
-        src/networking.c
-        src/notify.c
-        src/object.c
         src/pqsort.c
-        src/pqsort.h
-        src/pubsub.c
-        src/quicklist.c
-        src/quicklist.h
-        src/rand.c
-        src/rand.h
-        src/rdb.c
-        src/rdb.h
-        src/redis-check-rdb.c
-        src/redisassert.h
-        src/release.c
-        src/release.h
-        src/replication.c
-        src/rio.c
-        src/rio.h
-        src/scripting.c
-        src/sds.c
-        src/sds.h
-        src/sdsalloc.h
-        src/sentinel.c
-        src/server.c
-        src/server.h
-        src/setproctitle.c
+        src/zipmap.c
         src/sha1.c
-        src/sha1.h
-        src/slowlog.c
-        src/slowlog.h
-        src/solarisfixes.h
-        src/sort.c
-        src/sparkline.c
-        src/sparkline.h
-        src/syncio.c
-        src/t_hash.c
+        src/ziplist.c
+        src/release.c
+        src/networking.c
+        src/util.c
+        src/object.c
+        src/db.c
+        src/replication.c
+        src/rdb.c
+        src/t_string.c
         src/t_list.c
         src/t_set.c
-        src/t_string.c
         src/t_zset.c
-        src/testhelp.h
-        src/util.c
-        src/util.h
-        src/version.h
-        src/ziplist.c
-        src/ziplist.h
-        src/zipmap.c
-        src/zipmap.h
-        src/zmalloc.c
-        src/zmalloc.h
+        src/t_hash.c
+        src/config.c
+        src/aof.c
+        src/pubsub.c
+        src/multi.c
+        src/debug.c
+        src/sort.c
+        src/intset.c
+        src/syncio.c
+        src/cluster.c
+        src/crc16.c
+        src/endianconv.c
+        src/slowlog.c
+        src/scripting.c
+        src/bio.c
+        src/rio.c
+        src/rand.c
+        src/memtest.c
+        src/crc64.c
+        src/bitops.c
+        src/sentinel.c
+        src/notify.c
+        src/setproctitle.c
+        src/blocked.c
+        src/hyperloglog.c
+        src/latency.c
+        src/sparkline.c
+        src/redis-check-rdb.c
+        src/redis-check-aof.c
+        src/geo.c
+        src/lazyfree.c
+        src/module.c
+        src/evict.c
+        src/expire.c
+        src/geohash.c
+        src/geohash_helper.c
+        src/childinfo.c
+        src/defrag.c
+        src/siphash.c
+        src/rax.c
         )
 
-set_property(TARGET redis PROPERTY C_STANDARD 99)
-set_property(TARGET redis PROPERTY CXX_STANDARD 11)
-set_property(TARGET redis PROPERTY CXX_STANDARD_REQUIRED ON)
 
+#set_property(TARGET redis PROPERTY C_STANDARD 99)
+#set_property(TARGET redis PROPERTY CXX_STANDARD 11)
+#set_property(TARGET redis PROPERTY CXX_STANDARD_REQUIRED ON)
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    #    FINAL_CFLAGS+= -DUSE_JEMALLOC -I../deps/jemalloc/include
-    #DEPENDENCY_TARGETS+= jemalloc
-    #FINAL_CFLAGS+= -DUSE_JEMALLOC -I../deps/jemalloc/include
-    #FINAL_LIBS+= ../deps/jemalloc/lib/libjemalloc.a -ldl
-endif()
+#take care of compile flags
+##STD=-std=c99 -pedantic -DREDIS_STATIC=
+#WARN=-Wall -W -Wno-missing-field-initializers
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -pedantic -DREDIS_STATIC= -Wall -W -Wno-missing-field-initializers")
+#take care of LDFLAGS= -g -ggdb -rdynamic
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -g -ggdb -rdynamic")
+#if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+#    #    FINAL_CFLAGS+= -DUSE_JEMALLOC -I../deps/jemalloc/include
+#    #DEPENDENCY_TARGETS+= jemalloc
+#    #FINAL_CFLAGS+= -DUSE_JEMALLOC -I../deps/jemalloc/include
+#    #FINAL_LIBS+= ../deps/jemalloc/lib/libjemalloc.a -ldl
+#endif()
 
 # XXX: Is this required for OSX?
 #set(THREADS_PREFER_PTHREAD_FLAG ON)
 #find_package(Threads REQUIRED)
 
-target_include_directories(redis
-        PRIVATE ${REDIS_ROOT}/deps/hiredis
-        PRIVATE ${REDIS_ROOT}/deps/linenoise
-        PRIVATE ${REDIS_ROOT}/deps/lua/src
-        PRIVATE ${REDIS_ROOT}/deps/geohash-int
-        )
+#target_include_directories(redis
+#        PRIVATE ${REDIS_ROOT}/deps/hiredis
+#        PRIVATE ${REDIS_ROOT}/deps/linenoise
+#        PRIVATE ${REDIS_ROOT}/deps/lua/src
+#        PRIVATE ${REDIS_ROOT}/deps/geohash-int
+#        )
 
-# now create an imported static target
-add_library(luaa STATIC IMPORTED)
-# Import target "scintilla" for configuration ""
-set_property(TARGET luaa APPEND PROPERTY IMPORTED_CONFIGURATIONS NOCONFIG)
-set_target_properties(luaa PROPERTIES IMPORTED_LOCATION_NOCONFIG "${REDIS_ROOT}/deps/lua/src/liblua.a")
+#Isn't this a duplication?
+## now create an imported static target
+#add_library(luaa STATIC IMPORTED)
+## Import target "scintilla" for configuration ""
+#set_property(TARGET luaa APPEND PROPERTY IMPORTED_CONFIGURATIONS NOCONFIG)
+#set_target_properties(luaa PROPERTIES IMPORTED_LOCATION_NOCONFIG "${REDIS_ROOT}/deps/lua/src/liblua.a")
 
-target_link_libraries(redis
+# redis-server
+#$(REDIS_SERVER_NAME): $(REDIS_SERVER_OBJ)
+#$(REDIS_LD) -o $@ $^ ../deps/hiredis/libhiredis.a ../deps/lua/src/liblua.a $(FINAL_LIBS) that is deps/jemalloc/lib/libjemalloc.a -ldl -pthread
+
+
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+target_link_libraries(redis-server PRIVATE Threads::Threads)
+target_link_libraries(redis-server PRIVATE dl)
+
+target_link_libraries(redis-server
         #PRIVATE Threads::Threads
         PRIVATE m
-        PRIVATE luaa
         PRIVATE ${REDIS_ROOT}/deps/lua/src/liblua.a
         PRIVATE ${REDIS_ROOT}/deps/linenoise/linenoise.o
         PRIVATE ${REDIS_ROOT}/deps/hiredis/libhiredis.a
-        #        PRIVATE ${REDIS_ROOT}/deps/geohash-int/geohash.o
-        #        PRIVATE ${REDIS_ROOT}/deps/geohash-int/geohash_helper.o
         )
 
 # PRIVATE adds the property just to this target.
 # INTERFACE adds the property to targets that link to this target.
 # PUBLIC acts as both PRIVATE and INTERFACE because it adds the property to both this target and to targets that link to this target.
-target_compile_definitions(redis
-        PRIVATE REDIS_STATIC=
-        )
-
-target_compile_options(redis
-        PRIVATE -Wall -W -pedantic
-        )
+#target_compile_definitions(redis
+#        PRIVATE REDIS_STATIC=
+#        )
+#
+#target_compile_options(redis
+#        PRIVATE -Wall -W -pedantic
+#        )
 
 #add_custom_target(
 #   extern_lib
@@ -184,6 +184,6 @@ message(${PROJECT_SOURCE_DIR})
 message(${PROJECT_BINARY_DIR})
 
 
-add_custom_target(redis2 COMMAND make -C ${PROJECT_SOURCE_DIR}
-        CLION_EXE_DIR=${PROJECT_BINARY_DIR} && cp ${PROJECT_SOURCE_DIR}/src/redis-server ./
-        )
+#add_custom_target(redis2 COMMAND make -C ${PROJECT_SOURCE_DIR}
+#        CLION_EXE_DIR=${PROJECT_BINARY_DIR} && cp ${PROJECT_SOURCE_DIR}/src/redis-server ./
+#        )
