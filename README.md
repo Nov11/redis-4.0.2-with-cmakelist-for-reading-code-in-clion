@@ -1,3 +1,14 @@
+This is a repo for source code reading especially in Clion.  
+I added source files related to redis-server to CMake. So they can be identified by Clion.  
+The redis source code version is 4.0.2. The CMakeLists.txt may not work on source codes of different version.  
+Only the redis-server part is converted and this is the default configuration I guess. It's OK to navigate but not still need the original makefile.  
+To use this, copy the CMakeLists.txt and run 'make' in the source code directory first. This compiles the dependencies.  
+Then it should fits well with Clion, which I mean using IDE's debug function.  
+When doing this, I referred to https://liuzhengyang.github.io/2017/08/13/debug-redis/. I did some alterations on that file since this is a more recent version.  
+
+
+Below is the original readme goes with source code distribution package.
+
 This README is just a fast *quick start* document. You can find more detailed documentation at http://redis.io.
 
 What is Redis?
