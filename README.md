@@ -6,6 +6,10 @@ To use this, copy the CMakeLists.txt and run 'make' in the source code directory
 Then it should fits well with Clion, which I mean using IDE's debug function.  
 When doing this, I referred to https://liuzhengyang.github.io/2017/08/13/debug-redis/. I did some alterations on that file since this is a more recent version.  
 
+update for usage in Ubuntu 17.10
+1. make MALLOC=libc
+2. copy the CMakeLists.txt into the top level source folder
+3. select 'redis-server|debug' in Clion and click 'Debug'
 
 Below is the original readme goes with source code distribution package.
 
